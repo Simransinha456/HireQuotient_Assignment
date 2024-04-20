@@ -21,7 +21,7 @@ const Accordion = styled((props) => (
 
 const AccordionSummary = styled((props) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem',backgroundColor: '#5e52f3',padding:"2px",borderRadius:"50%",color:"white" }} />}
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem', backgroundColor: '#5e52f3', padding: "2px", borderRadius: "50%", color: "white" }} />}
     {...props}
   />
 ))(({ theme }) => ({
@@ -45,10 +45,10 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 export default function CustomizedAccordions() {
   const [data, setData] = React.useState([]);
-  const [expanded, setExpanded] = React.useState(null);
+  const [expanded, setExpanded] = React.useState([]);
 
   const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
+    setExpanded(newExpanded ? [...expanded, panel] : expanded.filter((item) => item !== panel));
   };
 
   React.useEffect(() => {
@@ -73,8 +73,8 @@ export default function CustomizedAccordions() {
 
   return (
     <div>
-      {Object?.entries(assetClassCounts).map(([assetClass, count], index) => (
-        <Accordion key={index} expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+      {Object.entries(assetClassCounts).map(([assetClass, count], index) => (
+        <Accordion key={index} expanded={expanded.includes(`panel${index}`)} onChange={handleChange(`panel${index}`)}>
           <AccordionSummary aria-controls={`panel${index}d-content`} id={`panel${index}d-header`}>
             <Typography>{`${assetClass} (${count})`}</Typography>
           </AccordionSummary>
@@ -82,11 +82,12 @@ export default function CustomizedAccordions() {
             <table className="custom-table">
               <thead>
                 <tr>
-                  <th>Name of Holding</th>
-                  <th>Ticker</th>
-                  <th>Average Price</th>
-                  <th>Market Price</th>
-                  <th>Latest Change Percentage</th>
+                  <th>NAME OF THE HOLDING</th>
+                  <th>TICKER</th>
+                  <th>AVERAGE PRICE</th>
+                  <th>MARKET PRICE</th>
+                  <th>LATEST CHANGE PERCENTAGE</th>
+                  <th>MARKET VALUE IN BASE CCY</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,7 +99,8 @@ export default function CustomizedAccordions() {
                       <td>{item.ticker}</td>
                       <td>{item.avg_price || ''}</td>
                       <td>{item.market_price || ''}</td>
-                      <td>{item.latest_chg_pct || ''}</td>
+                      <td style={{ color: item.latest_chg_pct <= -45 ? 'red' : 'black' }}>{item.latest_chg_pct || ''}</td>
+                      <td>{item.market_value_ccy || ''}</td>
                     </tr>
                   ))}
               </tbody>
